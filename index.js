@@ -52,7 +52,7 @@ exports.registerRoute = function (hook_name, args, callback) {
       if(method === "new"){
         customStyles.styles[method](req.query.styleId, req.query.css, req.query.padId, function(err, value){ //this was using req.padId, which wasn't working
           if(err) console.error(err);
-          res.send(value);
+          res.send({code: 0, message: "ok", data: value});
         });
       }
 
@@ -101,7 +101,7 @@ exports.registerRoute = function (hook_name, args, callback) {
       if(method === "setStylesForPad"){
         customStyles.styles[method](req.query.padId, req.query.styleIds, function(err, value){
           if(err) console.error(err);
-          res.send(value);
+          res.send({code: 0, message: "ok", data: null});
         });
       }
 

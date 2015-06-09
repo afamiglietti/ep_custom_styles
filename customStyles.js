@@ -34,9 +34,12 @@ exports.customStyles = {
                 }
               });
             }
-            cb(null, "All done :)");
+
           });
+
           db.set("custom_style_css_"+styleId, css);
+          var value = {styleId: css};
+          cb(null, value);
         }
       })
     },
