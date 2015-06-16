@@ -171,3 +171,49 @@ exports.aceAttribClasses = function(hook_name, attr, cb){
   attr.sub = 'tag:sub';
   cb(attr);
 }
+
+//Add the custom attributes as tags for export
+//If an attribute is added here, it gets exported as a tag, regardless of how it is rendered in the client... I think?
+//This fires when getHTML is called from the web API, the aceAttrib hooks don't seem to be?
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var tags = [];
+  //get the pad id from the pad
+  var padId = pad.id;
+  //fetch the styles
+  customStyles.styles.stylesForPad(padId, function(err, styleIds){
+    if(err) console.error(err);
+    var cssString = "";
+    if(!styleIds){
+      return cb("");
+    }
+    //old skool loop to reformat ids as attribute names
+    var index;
+    for(index = 0; index < styleIds.length; ++index){
+      tags[index] = "customStyles-" + styleIds[index];
+    }
+  });
+  console.warn('tags', tags);
+  cb(tags);
+}
+
+//following the example from ep_font_size
+//there has got to be a better way to do this
+exports.getLineHTMLForExport = function(hook, context) {
+  //fetch styles used from the apool because (shrug)
+  styles = [];
+  for (var key in context.apool.numToAttrib){
+    if(context.apool.numToAttrib[key][0].search("customStyles-") != -1){
+      if(styles.indexOf(context.apool.numToAttrib[key][0]) == -1){
+        styles.push(context.apool.numToAttrib[key][0]);
+    }
+      }
+  }
+  var lineContent = context.lineContent;
+  styles.forEach(function(style){
+    styleId = style.split('_')[1];
+    styleColor = style.split('_')[2];
+    lineContent = lineContent.replace(style, "span class='markup "+styleColor+"' data-id='"+styleId+"'");
+    lineContent = lineContent.replace("/"+style, "/span");
+  });
+  return lineContent;
+}
