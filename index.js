@@ -184,7 +184,7 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
     if(err) console.error(err);
     var cssString = "";
     if(!styleIds){
-      return cb("");
+      styleIds = [''];
     }
     //old skool loop to reformat ids as attribute names
     var index;
@@ -192,7 +192,6 @@ exports.exportHtmlAdditionalTags = function(hook, pad, cb){
       tags[index] = "customStyles-" + styleIds[index];
     }
   });
-  console.warn('tags', tags);
   cb(tags);
 }
 
@@ -209,11 +208,14 @@ exports.getLineHTMLForExport = function(hook, context) {
       }
   }
   var lineContent = context.lineContent;
+  console.warn(lineContent);
+
   styles.forEach(function(style){
     styleId = style.split('_')[1];
     styleColor = style.split('_')[2];
     lineContent = lineContent.replace(style, "span class='markup "+styleColor+"' data-id='"+styleId+"'");
     lineContent = lineContent.replace("/"+style, "/span");
   });
+  lineContent = lineContent + '<br>';
   return lineContent;
 }
